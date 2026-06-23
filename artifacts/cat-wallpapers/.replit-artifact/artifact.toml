@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Cat Wallpapers"
+version = "1.0.0"
+id = "artifacts/cat-wallpapers"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24947
+
+[services.development]
+run = "pnpm --filter @workspace/cat-wallpapers run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/cat-wallpapers", "run", "build" ]
+publicDir = "artifacts/cat-wallpapers/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24947"
+BASE_PATH = "/"
