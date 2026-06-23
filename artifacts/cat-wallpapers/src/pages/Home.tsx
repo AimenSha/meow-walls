@@ -56,19 +56,53 @@ function Marquee() {
 }
 
 const FUN_FACTS = [
-  { icon: "😴", fact: "Cats sleep 12–16 hours a day — that's up to 70% of their lives!" },
-  { icon: "👂", fact: "Each cat ear has 32 individual muscles, letting them rotate 180 degrees." },
-  { icon: "👃", fact: "A cat's nose print is unique — like a human fingerprint." },
-  { icon: "🦘", fact: "Cats can jump up to 6× their own body length in a single leap." },
-  { icon: "🎵", fact: "A cat's purr vibrates at 25–150 Hz, a frequency known to promote bone healing." },
-  { icon: "🍬", fact: "Cats cannot taste sweetness — they lack the taste receptor gene for it." },
-  { icon: "🐾", fact: "A group of cats is called a clowder. A group of kittens is a kindle." },
-  { icon: "🏛️", fact: "The oldest known pet cat was buried alongside a human ~9,500 years ago in Cyprus." },
-  { icon: "🚶", fact: "Cats walk like camels and giraffes — both right feet, then both left feet." },
-  { icon: "🌐", fact: "There are over 600 million domestic cats in the world today." },
+  { icon: "😴", category: "Biology", fact: "Cats sleep 12–16 hours a day — that's up to 70% of their lives!" },
+  { icon: "👂", category: "Biology", fact: "Each cat ear has 32 individual muscles, letting them rotate 180 degrees." },
+  { icon: "👃", category: "Biology", fact: "A cat's nose print is unique — like a human fingerprint." },
+  { icon: "🦘", category: "Biology", fact: "Cats can jump up to 6× their own body length in a single leap." },
+  { icon: "🎵", category: "Biology", fact: "A cat's purr vibrates at 25–150 Hz, a frequency known to promote bone healing." },
+  { icon: "🍬", category: "Biology", fact: "Cats cannot taste sweetness — they lack the taste receptor gene for it." },
+  { icon: "🐾", category: "Trivia", fact: "A group of cats is called a clowder. A group of kittens is a kindle." },
+  { icon: "🏛️", category: "History", fact: "The oldest known pet cat was buried alongside a human ~9,500 years ago in Cyprus." },
+  { icon: "🚶", category: "Biology", fact: "Cats walk like camels and giraffes — both right feet first, then both left feet." },
+  { icon: "🌐", category: "Trivia", fact: "There are over 600 million domestic cats in the world today." },
+  { icon: "🎬", category: "Movies", fact: "The 2019 film Cats used 'digital fur technology' to put human actors in CGI cat suits — it became one of cinema's most talked-about disasters." },
+  { icon: "🐱", category: "Movies", fact: "Keanu (2016) starred Keegan-Michael Key and Jordan Peele on a mission to rescue a stolen kitten named Keanu." },
+  { icon: "🎥", category: "Movies", fact: "The aristocats (1970) was the first Disney animated film to use xerography for all backgrounds, featuring Thomas O'Malley and Duchess." },
+  { icon: "🐈", category: "Movies", fact: "Puss in Boots (2011) earned over $554 million worldwide — making the Shrek spin-off cat one of DreamWorks' biggest hits." },
+  { icon: "🌙", category: "Movies", fact: "Cat People (1942) is a classic horror film where a woman believes she transforms into a deadly panther when aroused." },
+  { icon: "🎞️", category: "Movies", fact: "In Breakfast at Tiffany's (1961), Audrey Hepburn's unnamed cat 'Cat' became one of Hollywood's most iconic animal co-stars." },
+  { icon: "🏆", category: "Movies", fact: "A Street Cat Named Bob (2016) featured a real-life ginger cat who helped a busker turn his life around — the true story became a bestselling book too." },
+  { icon: "🌟", category: "Movies", fact: "Church, the zombie cat in Pet Sematary (1989 & 2019), is one of horror cinema's most iconic feline villains." },
+  { icon: "🎭", category: "Trivia", fact: "The Broadway musical Cats, based on T.S. Eliot's poems, ran for 18 years and grossed over $4 billion worldwide." },
+  { icon: "💻", category: "Internet", fact: "The first cat video on the internet was uploaded in 1894 — by Thomas Edison's assistant — showing two cats boxing in a tiny ring." },
+  { icon: "📱", category: "Internet", fact: "Grumpy Cat (Tardar Sauce) became the world's most recognisable internet cat, earning an estimated $100 million in her lifetime." },
+  { icon: "🐈‍⬛", category: "Internet", fact: "Nyan Cat — the pixelated cat with a Pop-Tart body — sold as an NFT for nearly $600,000 in 2021." },
 ];
 
 function FunFacts() {
+  const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setIndex(prev => (prev + 2) % FUN_FACTS.length);
+        setVisible(true);
+      }, 400);
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const pair = [
+    FUN_FACTS[index % FUN_FACTS.length],
+    FUN_FACTS[(index + 1) % FUN_FACTS.length],
+  ];
+
+  const total = Math.ceil(FUN_FACTS.length / 2);
+  const current = Math.floor(index / 2) % total;
+
   return (
     <section className="container mx-auto px-4 py-12">
       <div className="flex items-center gap-3 mb-8">
@@ -76,22 +110,45 @@ function FunFacts() {
         <h2 className="font-serif text-2xl font-bold text-foreground text-center">Fun Cat Facts</h2>
         <div className="h-px flex-1 bg-border" />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-        {FUN_FACTS.map((item, i) => (
-          <motion.div
+
+      <motion.div
+        key={index}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: visible ? 1 : 0, y: visible ? 0 : -12 }}
+        transition={{ duration: 0.35 }}
+        className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-2xl mx-auto"
+      >
+        {pair.map((item, i) => (
+          <div
             key={i}
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.35, delay: i * 0.05 }}
-            className="bg-card border border-border rounded-2xl p-5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300"
+            className="bg-card border border-border rounded-2xl p-6 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300"
             data-testid={`fact-card-${i}`}
           >
-            <div className="text-3xl mb-3">{item.icon}</div>
+            <div className="text-4xl mb-3">{item.icon}</div>
+            <span className="inline-block text-[10px] font-bold uppercase tracking-widest text-primary bg-primary/15 px-2 py-0.5 rounded-full mb-3">
+              {item.category}
+            </span>
             <p className="text-sm text-muted-foreground leading-relaxed font-semibold">{item.fact}</p>
-          </motion.div>
+          </div>
+        ))}
+      </motion.div>
+
+      {/* Dot indicators */}
+      <div className="flex justify-center gap-2 mt-6">
+        {Array.from({ length: total }).map((_, i) => (
+          <button
+            key={i}
+            onClick={() => { setVisible(false); setTimeout(() => { setIndex(i * 2); setVisible(true); }, 400); }}
+            className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
+              i === current ? "bg-primary w-5" : "bg-border hover:bg-primary/40"
+            }`}
+            data-testid={`fact-dot-${i}`}
+          />
         ))}
       </div>
+      <p className="text-center text-xs text-muted-foreground mt-3 font-semibold">
+        Changes every minute · {current + 1} of {total}
+      </p>
     </section>
   );
 }
