@@ -4,7 +4,6 @@ import { CatImage, downloadImage } from "@/lib/api";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
 
 interface WallpaperCardProps {
   image: CatImage;
@@ -16,15 +15,29 @@ export function WallpaperCard({ image, onClick }: WallpaperCardProps) {
 
   const handleDownload = (e: React.MouseEvent) => {
     e.stopPropagation();
-    downloadImage(image.url, `meow-walls-${breed?.name?.toLowerCase().replace(/\s+/g, '-') || 'cat'}-${image.id}.jpg`);
+    downloadImage(
+      image.url,
+      `meowwalls-${breed?.name?.toLowerCase().replace(/\s+/g, "-") || "cat"}-${image.id}.jpg`
+    );
   };
 
+  const resLabel =
+    image.width && image.height
+      ? image.width >= 3840
+        ? "4K"
+        : image.width >= 2560
+        ? "2K"
+        : image.width >= 1920
+        ? "FHD"
+        : null
+      : null;
+
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="group relative rounded-xl overflow-hidden cursor-zoom-in bg-muted shadow-sm hover:shadow-xl transition-all duration-300"
+      transition={{ duration: 0.35 }}
+      className="group relative rounded-2xl overflow-hidden cursor-zoom-in bg-card border border-border/40 shadow hover:shadow-xl hover:shadow-black/40 hover:scale-[1.02] transition-all duration-300"
       onClick={onClick}
       data-testid={`card-wallpaper-${image.id}`}
     >
@@ -34,26 +47,31 @@ export function WallpaperCard({ image, onClick }: WallpaperCardProps) {
         className="w-full h-auto object-cover block"
         loading="lazy"
       />
-      
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-        <div className="flex items-center justify-between">
-          <div>
+
+      {/* Hover overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3.5">
+        <div className="flex items-end justify-between gap-2">
+          <div className="flex flex-col gap-1.5">
             {breed && (
-              <Badge 
-                variant="secondary" 
-                className="bg-white/20 hover:bg-white/30 text-white backdrop-blur-md border-none font-medium pointer-events-auto"
-                data-testid={`badge-breed-${image.id}`}
-              >
-                <Link href={`/breed/${breed.id}`} onClick={e => e.stopPropagation()}>
+              <Link href={`/breed/${breed.id}`} onClick={(e) => e.stopPropagation()}>
+                <span
+                  className="inline-block text-xs font-bold text-white bg-primary/80 hover:bg-primary px-2.5 py-1 rounded-full backdrop-blur-sm transition-colors cursor-pointer"
+                  data-testid={`badge-breed-${image.id}`}
+                >
                   {breed.name}
-                </Link>
-              </Badge>
+                </span>
+              </Link>
+            )}
+            {resLabel && (
+              <span className="inline-block text-[10px] font-bold text-primary/90 bg-black/50 px-2 py-0.5 rounded-full w-fit">
+                {resLabel}
+              </span>
             )}
           </div>
           <Button
             size="icon"
             variant="ghost"
-            className="rounded-full bg-white/20 hover:bg-white/40 text-white backdrop-blur-md border-none opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 delay-75 pointer-events-auto"
+            className="rounded-full w-9 h-9 bg-white/15 hover:bg-primary/80 text-white backdrop-blur-md border-none opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-200 delay-75 pointer-events-auto flex-shrink-0"
             onClick={handleDownload}
             data-testid={`button-download-${image.id}`}
           >

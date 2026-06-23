@@ -5,11 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Lightbox } from "./Lightbox";
 
+export type Orientation = "desktop" | "mobile";
+
 interface GalleryProps {
   breedId?: string;
+  orientation: Orientation;
 }
 
-export function Gallery({ breedId }: GalleryProps) {
+function matchesOrientation(img: CatImage, orientation: Orientation): boolean {
+  if (!img.width || !img.height) return true;
+  if (orientation === "desktop") return img.width >= img.height;
+  return img.height > img.width;
+}
+
+export function Gallery({ breedId, orientation }: GalleryProps) {
   const [images, setImages] = useState<CatImage[]>([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -21,12 +30,16 @@ export function Gallery({ breedId }: GalleryProps) {
       if (isInitial) setLoading(true);
       else setLoadingMore(true);
 
-      const newImages = await fetchImages(pageNum, 20, breedId);
-      
+      const raw = await fetchImages(pageNum, 40, breedId);
+      const filtered = raw.filter(img => matchesOrientation(img, orientation));
+
       if (isInitial) {
-        setImages(newImages);
+        setImages(filtered);
       } else {
-        setImages(prev => [...prev, ...newImages]);
+        setImages(prev => {
+          const existing = new Set(prev.map(i => i.id));
+          return [...prev, ...filtered.filter(i => !existing.has(i.id))];
+        });
       }
     } catch (error) {
       console.error("Failed to load images", error);
@@ -34,12 +47,12 @@ export function Gallery({ breedId }: GalleryProps) {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [breedId]);
+  }, [breedId, orientation]);
 
   useEffect(() => {
     setPage(0);
     loadImages(0, true);
-  }, [breedId, loadImages]);
+  }, [breedId, orientation, loadImages]);
 
   const handleLoadMore = () => {
     const nextPage = page + 1;
@@ -58,19 +71,23 @@ export function Gallery({ breedId }: GalleryProps) {
   if (!loading && images.length === 0) {
     return (
       <div className="text-center py-24 text-muted-foreground" data-testid="status-empty">
-        <p className="text-lg">No wallpapers found.</p>
-        <p className="text-sm">Try a different breed.</p>
+        <p className="text-lg font-semibold">No wallpapers found.</p>
+        <p className="text-sm mt-1">Try a different breed or orientation.</p>
       </div>
     );
   }
 
   return (
     <>
-      <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
+      <div className={`columns-1 gap-5 space-y-5 ${
+        orientation === "desktop"
+          ? "sm:columns-2 lg:columns-3"
+          : "sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5"
+      }`}>
         {images.map((img) => (
-          <div key={`${img.id}-${Math.random()}`} className="break-inside-avoid">
-            <WallpaperCard 
-              image={img} 
+          <div key={img.id} className="break-inside-avoid">
+            <WallpaperCard
+              image={img}
               onClick={() => setSelectedImage(img)}
             />
           </div>
@@ -78,12 +95,12 @@ export function Gallery({ breedId }: GalleryProps) {
       </div>
 
       <div className="flex justify-center mt-12 mb-8">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="lg"
           onClick={handleLoadMore}
           disabled={loadingMore}
-          className="rounded-full px-8 bg-card border-primary/20 text-primary hover:bg-primary/5 hover:text-primary transition-colors"
+          className="rounded-full px-10 border-primary/30 text-primary hover:bg-primary/10 hover:border-primary/60 transition-all font-bold"
           data-testid="button-load-more"
         >
           {loadingMore ? (
@@ -94,9 +111,9 @@ export function Gallery({ breedId }: GalleryProps) {
         </Button>
       </div>
 
-      <Lightbox 
-        image={selectedImage} 
-        onClose={() => setSelectedImage(null)} 
+      <Lightbox
+        image={selectedImage}
+        onClose={() => setSelectedImage(null)}
       />
     </>
   );

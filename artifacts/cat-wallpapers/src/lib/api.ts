@@ -17,11 +17,12 @@ export interface CatImage {
 
 const BASE_URL = 'https://api.thecatapi.com/v1';
 
-export async function fetchImages(page = 0, limit = 20, breedId?: string): Promise<CatImage[]> {
+export async function fetchImages(page = 0, limit = 40, breedId?: string): Promise<CatImage[]> {
   const url = new URL(`${BASE_URL}/images/search`);
   url.searchParams.append('limit', limit.toString());
   url.searchParams.append('page', page.toString());
   url.searchParams.append('has_breeds', '1');
+  url.searchParams.append('size', 'full');
   if (breedId && breedId !== 'all') {
     url.searchParams.append('breed_ids', breedId);
   }
@@ -39,6 +40,17 @@ export async function fetchBreeds(): Promise<Breed[]> {
 export async function fetchBreedDetails(breedId: string): Promise<Breed | undefined> {
   const breeds = await fetchBreeds();
   return breeds.find(b => b.id === breedId);
+}
+
+export async function fetchBreedImage(breedId: string): Promise<CatImage | null> {
+  const url = new URL(`${BASE_URL}/images/search`);
+  url.searchParams.append('limit', '1');
+  url.searchParams.append('breed_ids', breedId);
+  url.searchParams.append('size', 'full');
+  const res = await fetch(url.toString());
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data[0] ?? null;
 }
 
 export async function downloadImage(url: string, filename: string) {
