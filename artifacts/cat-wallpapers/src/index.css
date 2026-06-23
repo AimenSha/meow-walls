@@ -225,6 +225,22 @@
   }
 }
 
+/* Marquee scroll animation */
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 22s linear infinite;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
 /* Paw print SVG pattern for hero */
 .paw-pattern {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='%23f5b83d' fill-opacity='0.04'%3E%3Cellipse cx='25' cy='20' rx='5' ry='6'/%3E%3Cellipse cx='40' cy='16' rx='5' ry='6'/%3E%3Cellipse cx='55' cy='20' rx='5' ry='6'/%3E%3Cellipse cx='18' cy='32' rx='4' ry='5'/%3E%3Cellipse cx='40' cy='38' rx='14' ry='12'/%3E%3C/g%3E%3C/svg%3E");

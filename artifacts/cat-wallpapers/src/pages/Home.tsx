@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "wouter";
 import { Header } from "@/components/Header";
 import { Gallery, Orientation } from "@/components/Gallery";
 import { BreedCard } from "@/components/BreedCard";
@@ -16,6 +17,82 @@ function WaveDivider() {
         />
       </svg>
     </div>
+  );
+}
+
+function PawIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="5" cy="4" rx="2.2" ry="2.8" />
+      <ellipse cx="10" cy="3" rx="2.2" ry="2.8" />
+      <ellipse cx="15" cy="4.5" rx="2" ry="2.5" />
+      <ellipse cx="2" cy="8.5" rx="1.8" ry="2.2" />
+      <ellipse cx="9" cy="11" rx="5.5" ry="5" />
+    </svg>
+  );
+}
+
+const MARQUEE_TEXT = "Wanna know more about cats?";
+const MARQUEE_ITEMS = Array(12).fill(MARQUEE_TEXT);
+
+function Marquee() {
+  return (
+    <Link href="/encyclopedia">
+      <div
+        className="w-full overflow-hidden bg-primary cursor-pointer hover:bg-primary/90 transition-colors"
+        data-testid="marquee-encyclopedia-link"
+      >
+        <div className="marquee-track py-2.5">
+          {MARQUEE_ITEMS.map((text, i) => (
+            <span key={i} className="flex items-center gap-3 px-6 text-primary-foreground font-bold text-sm whitespace-nowrap">
+              <PawIcon />
+              {text}
+            </span>
+          ))}
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+const FUN_FACTS = [
+  { icon: "😴", fact: "Cats sleep 12–16 hours a day — that's up to 70% of their lives!" },
+  { icon: "👂", fact: "Each cat ear has 32 individual muscles, letting them rotate 180 degrees." },
+  { icon: "👃", fact: "A cat's nose print is unique — like a human fingerprint." },
+  { icon: "🦘", fact: "Cats can jump up to 6× their own body length in a single leap." },
+  { icon: "🎵", fact: "A cat's purr vibrates at 25–150 Hz, a frequency known to promote bone healing." },
+  { icon: "🍬", fact: "Cats cannot taste sweetness — they lack the taste receptor gene for it." },
+  { icon: "🐾", fact: "A group of cats is called a clowder. A group of kittens is a kindle." },
+  { icon: "🏛️", fact: "The oldest known pet cat was buried alongside a human ~9,500 years ago in Cyprus." },
+  { icon: "🚶", fact: "Cats walk like camels and giraffes — both right feet, then both left feet." },
+  { icon: "🌐", fact: "There are over 600 million domestic cats in the world today." },
+];
+
+function FunFacts() {
+  return (
+    <section className="container mx-auto px-4 py-12">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="h-px flex-1 bg-border" />
+        <h2 className="font-serif text-2xl font-bold text-foreground text-center">Fun Cat Facts</h2>
+        <div className="h-px flex-1 bg-border" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        {FUN_FACTS.map((item, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.35, delay: i * 0.05 }}
+            className="bg-card border border-border rounded-2xl p-5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300"
+            data-testid={`fact-card-${i}`}
+          >
+            <div className="text-3xl mb-3">{item.icon}</div>
+            <p className="text-sm text-muted-foreground leading-relaxed font-semibold">{item.fact}</p>
+          </motion.div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -67,9 +144,15 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="inline-block text-primary text-4xl mb-3 select-none" aria-hidden>
-              ᶜᵃᵗ
-            </span>
+            <div className="flex justify-center mb-4" aria-hidden>
+              <svg width="52" height="48" viewBox="0 0 52 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="11" cy="10" rx="6" ry="7.5" fill="hsl(42 95% 55%)" opacity="0.85" />
+                <ellipse cx="26" cy="7" rx="6" ry="7.5" fill="hsl(42 95% 55%)" opacity="0.85" />
+                <ellipse cx="41" cy="10" rx="6" ry="7.5" fill="hsl(42 95% 55%)" opacity="0.85" />
+                <ellipse cx="5" cy="22" rx="5" ry="6" fill="hsl(42 95% 55%)" opacity="0.85" />
+                <ellipse cx="26" cy="30" rx="18" ry="16" fill="hsl(42 95% 55%)" opacity="0.85" />
+              </svg>
+            </div>
             <h2 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4 leading-tight">
               Beautiful cats,<br />
               <span className="text-primary italic">made for your screen.</span>
@@ -82,7 +165,13 @@ export default function Home() {
         </div>
       </section>
 
-      <main className="flex-1 container mx-auto px-4 py-8">
+      {/* Marquee */}
+      <Marquee />
+
+      {/* Fun Facts */}
+      <FunFacts />
+
+      <main className="flex-1 container mx-auto px-4 pb-8">
 
         {/* Segment Tabs */}
         <div className="flex justify-center mb-8">
@@ -117,7 +206,6 @@ export default function Home() {
           </h3>
           <ScrollArea className="w-full whitespace-nowrap">
             <div className="flex w-max gap-3 pb-4 items-stretch">
-              {/* All Cats card */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.97 }}
