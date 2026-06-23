@@ -31,7 +31,7 @@ export function Header() {
               Meow<span className="text-primary">Walls</span>
             </h1>
             <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mt-0.5">
-              Feline Wallpapers
+              Purrfect Wallpapers
             </p>
           </div>
         </Link>
