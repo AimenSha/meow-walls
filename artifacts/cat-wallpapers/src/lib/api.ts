@@ -55,7 +55,8 @@ export async function fetchBreedImage(breedId: string): Promise<CatImage | null>
 
 export async function downloadImage(url: string, filename: string) {
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { mode: 'cors' });
+    if (!res.ok) throw new Error('fetch failed');
     const blob = await res.blob();
     const blobUrl = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -64,8 +65,15 @@ export async function downloadImage(url: string, filename: string) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    window.URL.revokeObjectURL(blobUrl);
-  } catch (error) {
-    console.error('Failed to download image', error);
+    setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+  } catch {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   }
 }
